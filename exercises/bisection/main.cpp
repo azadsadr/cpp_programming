@@ -6,15 +6,19 @@ double func(const double& x) {
 
 int main() {
 
+    std::cout << "this program will solve an equation using bisection method.\n";
+
     double a{-10};
     double b{10};
     double m{0};
     double t{1e-9};
 
     while (std::abs(b-a) >= t) {
+        // to avoid potentially expensive recalculation
         double fa{func(a)};
         double fb{func(b)};
 
+        // maybe be already found the root?
         if (std::abs(fa) < t) {
             m=a;
             break;
@@ -25,10 +29,10 @@ int main() {
 
         // actual bisection
         if (fa*func(m) < 0) {
-            std::cout << "[a, m] selected!\n";
+            //std::cout << "[a, m] selected!\n";
             b = m;
         } else if (func(m)*fb < 0) {
-            std::cout << "[m, b] selected!\n";
+            //std::cout << "[m, b] selected!\n";
             a = m;
         } else {
             std::cout << "bisection won't work in this interval, function has the same signs at both ends!\n";
