@@ -20,6 +20,12 @@ public:
     double b;
     double c;
 
+    CCoeffs() {
+        a = 0;
+        b = 0;
+        c = 0;
+    }
+
     void setValues(double a, double b, double c) {
         if (a==0) {
             std::cout << "this is not quadratic equation, terminated!\n";
