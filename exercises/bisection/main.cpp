@@ -1,6 +1,6 @@
 #include <iostream>
 
-double func(double& x) {
+double func(const double& x) {
     return x*x*x - 6*x*x + 11*x - 6;
 }
 
