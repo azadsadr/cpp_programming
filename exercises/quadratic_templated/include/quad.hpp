@@ -1,17 +1,35 @@
-#include <iostream>
+#pragma once
 #include <cmath>
 #include <fstream>
-#include "quad.hpp"
+#include "coeffs.hpp"
+#include "complex.hpp"
 
+template <typename T>
+class CQuadraticEquation {
+public:
+    CCoeffs<T> coeffs;
+    CComplex<T> S1;
+    CComplex<T> S2;
+    bool solved{false};
 
-void CQuadraticEquation::ask_input() {
+    void ask_input();
+    void read_from_file();
+    void write_to_file();
+    void displayEquation();
+    void solve();
+    void displaySolution();
+};
+
+template <typename T>
+void CQuadraticEquation<T>::ask_input() {
     int a{0}, b{0}, c{0};
     std::cout << "Enter coefficients:!\n";
     std::cin >> a >> b >> c;
     coeffs.setValues(a,b,c);
 }
 
-void CQuadraticEquation::read_from_file() {
+template <typename T>
+void CQuadraticEquation<T>::read_from_file() {
     std::ifstream file("input.txt");
     if (file) {
         std::cout << "successfully read the file!\n";
@@ -25,7 +43,8 @@ void CQuadraticEquation::read_from_file() {
     file.close();
 }
 
-void CQuadraticEquation::write_to_file() {
+template <typename T>
+void CQuadraticEquation<T>::write_to_file() {
     std::fstream file("solution_history.txt", std::ios::app);
     if (solved==true) {
         if (coeffs.a==1) {
@@ -37,7 +56,8 @@ void CQuadraticEquation::write_to_file() {
     }
 }
 
-void CQuadraticEquation::displayEquation() {
+template <typename T>
+void CQuadraticEquation<T>::displayEquation() {
     if (coeffs.a==1) {
         std::cout << "x^2 + " << coeffs.b << "x + " << coeffs.c << "\n";
     } else {
@@ -45,7 +65,8 @@ void CQuadraticEquation::displayEquation() {
     }
 }
 
-void CQuadraticEquation::solve() {
+template <typename T>
+void CQuadraticEquation<T>::solve() {
     double delta{ coeffs.b * coeffs.b - 4 * coeffs.a * coeffs.c };
     if (delta >= 0) {
         double delta_root{std::sqrt(delta)};
@@ -61,7 +82,8 @@ void CQuadraticEquation::solve() {
     solved = true;
 }
 
-void CQuadraticEquation::displaySolution() {
+template <typename T>
+void CQuadraticEquation<T>::displaySolution() {
     std::cout << "Solutions are:\n";
     if (S1.imag > 0) {
         std::cout << S1.real << " + " << S1.imag << "i" << "\n";
@@ -79,6 +101,8 @@ void CQuadraticEquation::displaySolution() {
         std::cout << S2.real << "\n";
     }
 }
+
+
 
 
 

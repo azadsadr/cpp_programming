@@ -2,6 +2,7 @@
 #include "coeffs.hpp"
 #include "complex.hpp"
 
+
 class CQuadraticEquation {
 public:
     CCoeffs coeffs;
