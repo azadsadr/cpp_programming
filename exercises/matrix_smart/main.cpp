@@ -1,13 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <memory>
 
 
 template <typename T>
 class CMatrix {
 public:
     int size;
-    T* data;
+    std::unique_ptr<T[]> data;
 
     CMatrix();                                      // default constructor
     CMatrix(const int& N);                          // parameterized constructor
@@ -15,7 +16,7 @@ public:
     CMatrix<T>& operator = (const CMatrix<T>& obj); // copy assignment operator
     CMatrix(CMatrix<T>&& obj);                      // move constructor
     CMatrix<T>& operator = (CMatrix<T>&& obj);      // move assignment operator
-    ~CMatrix();                                     // destructor
+    //~CMatrix();                                     // destructor
 
     void importMatrix(const std::string& file);
     void exportMatrix(const std::string& file);
@@ -28,7 +29,7 @@ public:
 template<typename T>
 CMatrix<T>::CMatrix() {
     size=0;
-    data = nullptr;
+    data.reset(nullptr);
     std::cout << "default constructor called!\n";
 }
 
@@ -37,9 +38,9 @@ template <typename T>
 CMatrix<T>::CMatrix(const int& N) {
     size = N;
     if (N>0) {
-        data = new T[size*size];
+        data = std::make_unique<T[]>(size*size);
     } else {
-        data = nullptr;
+        data.reset(nullptr);
     }
     std::cout << "parameterized constructor called!\n";
 }
@@ -48,11 +49,10 @@ CMatrix<T>::CMatrix(const int& N) {
 template <typename T>
 CMatrix<T>::CMatrix(const CMatrix<T>& obj) {
     size = obj.size;
-    //data = nullptr;
     if (obj.data == nullptr) {
-        data = nullptr;
+        data.reset(nullptr);
     } else {
-        data = new T[size*size];
+        data = std::make_unique<T[]>(size*size);
         for (int i=0; i<size*size; i++) {
             data[i] = obj.data[i];
         }
@@ -67,17 +67,17 @@ CMatrix<T>& CMatrix<T>::operator = (const CMatrix<T>& obj) {
         size = obj.size;
 
         if (data != nullptr) {
-            delete[] data;
-            data = nullptr;
+            //delete[] data;
+            data.reset(nullptr);
         }
 
         if (obj.data != nullptr) {
-            data = new T[size*size];
+            data = std::make_unique<T[]>(size*size);
             for (int i=0; i<size*size; i++) {
                 data[i] = obj.data[i];
             }
         } else {
-            data = nullptr;
+            data.reset(nullptr);
         }
     }
     std::cout << "copy assignment operator called!\n";
@@ -90,8 +90,8 @@ CMatrix<T>::CMatrix(CMatrix<T>&& obj) {
     if (this != &obj) {
         size = obj.size;
         obj.size = 0;
-        data = obj.data;
-        obj.data = nullptr;
+        data = std::move(obj.data);
+        obj.data.reset(nullptr);
     }
     std::cout << "move constructor called!\n";
 }
@@ -103,18 +103,14 @@ CMatrix<T>& CMatrix<T>::operator = (CMatrix<T>&& obj) {
     if (this != &obj) {
         size = obj.size;
         obj.size = 0;
-        if (data != nullptr) {
-            delete[] data;
-            data = nullptr;
-        }
-        data = obj.data;
+        data = std::move(obj.data);
         obj.data = nullptr;
     }
     std::cout << "move assignment operator called!\n";
     return *this;
 }
 
-// destructor
+/* destructor
 template <typename T>
 CMatrix<T>::~CMatrix() {
     if (data != nullptr) {
@@ -123,6 +119,7 @@ CMatrix<T>::~CMatrix() {
     }
     std::cout << "destructor called!\n";
 }
+*/
 
 
 template <typename T>
@@ -132,7 +129,7 @@ void CMatrix<T>::importMatrix(const std::string& file) {
     if (filevar) {
         std::cout << "successfully read the file " << file << "\n";
         filevar >> size;
-        data = new T[size*size];
+        data = std::make_unique<T[]>(size*size);
         for (int i=0; i<size; i++) {
             for (int j=0; j<size; j++) {
                 filevar >> data[i*size+j];
